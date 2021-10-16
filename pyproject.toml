@@ -26,6 +26,7 @@ disable = [
 
   "no-member",
   "arguments-differ",
+  "unnecessary-comprehension",
 
   "duplicate-code",
   "fixme",
