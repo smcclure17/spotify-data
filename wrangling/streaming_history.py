@@ -39,14 +39,14 @@ class SpotifyParser:
                 print(f"reading {len(file_chunk)} records from file {file_num}")
 
         return streaming_files
-    
+
     @staticmethod
     def _create_track(track: Dict):
         try:
             return Track(**track)
         except IndexError:
             logging.warning(f"cannot fetch track data for {track}")
-            return None    
+            return None
 
     @functools.cached_property
     def listening_history(self) -> pd.DataFrame:

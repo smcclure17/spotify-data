@@ -6,7 +6,9 @@ from wrangling.streaming_history import SpotifyParser
 from utils import GENRE_MAP, Genre, SpotifyVariables
 
 
-def calculate_genre_percentages(dataset: SpotifyParser.listening_history, cutoff: int = 20):
+def calculate_genre_percentages(
+    dataset: SpotifyParser.listening_history, cutoff: int = 20
+):
     """find the percentage of total songs listened to for each genre by day
 
     dataset: pd.Dataframe output of the SpotifyParser class
@@ -15,7 +17,9 @@ def calculate_genre_percentages(dataset: SpotifyParser.listening_history, cutoff
 
     # move this to class dec
     dataset.dropna()
-    dataset[SpotifyVariables.GENRES] = dataset[SpotifyVariables.GENRES].str.strip("[]").str.split(",")
+    dataset[SpotifyVariables.GENRES] = (
+        dataset[SpotifyVariables.GENRES].str.strip("[]").str.split(",")
+    )
     dataset = (
         dataset.dropna()
         .assign(
@@ -26,7 +30,9 @@ def calculate_genre_percentages(dataset: SpotifyParser.listening_history, cutoff
         .loc[:, [SpotifyVariables.TIMESTAMP, SpotifyVariables.GENRES]]
         .set_index(SpotifyVariables.TIMESTAMP)
     )
-    dataset[SpotifyVariables.GENRES] = dataset[SpotifyVariables.GENRES].str.replace("'", "").map(GENRE_MAP)
+    dataset[SpotifyVariables.GENRES] = (
+        dataset[SpotifyVariables.GENRES].str.replace("'", "").map(GENRE_MAP)
+    )
 
     genres = (
         dataset.groupby([SpotifyVariables.TIMESTAMP, SpotifyVariables.GENRES])
@@ -42,12 +48,19 @@ def calculate_genre_percentages(dataset: SpotifyParser.listening_history, cutoff
     dataset["percentage"] = dataset["count"] / dataset["total"]
     return dataset
 
-def calculate_rolling_average(dataset: SpotifyParser.listening_history, window: int = 30):
+
+def calculate_rolling_average(
+    dataset: SpotifyParser.listening_history, window: int = 30
+):
     dataset = calculate_genre_percentages(dataset)
     frames = []
     # TODO(sean): rolling with groupby returned NANs, so slice and parse each genre separately
     # find out why groupby returned all nulls
     for genre in Genre:
         genre_data = dataset[dataset[SpotifyVariables.GENRES] == genre]
-        frames.append(genre_data.set_index(SpotifyVariables.GENRES, append=True).rolling(window=window, min_periods=1).mean())
+        frames.append(
+            genre_data.set_index(SpotifyVariables.GENRES, append=True)
+            .rolling(window=window, min_periods=1)
+            .mean()
+        )
     return pd.concat(frames)
