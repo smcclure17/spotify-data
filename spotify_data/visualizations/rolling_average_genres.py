@@ -1,6 +1,6 @@
-from datasets.rolling_average import calculate_rolling_average
-from wrangling.streaming_history import SpotifyParser
-from utils import SpotifyVariables
+from spotify_data.datasets.rolling_average import calculate_rolling_average
+from spotify_data.wrangling.streaming_history import SpotifyParser
+from spotify_data.utils import SpotifyVariables
 import pandas as pd
 
 pd.options.plotting.backend = "plotly"
