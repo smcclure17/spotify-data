@@ -1,11 +1,15 @@
 from enum import Enum
 from typing import Dict
 from functools import total_ordering
-import spotipy
 import json
+import spotipy
+from pathlib import Path
+
+ROOT_PATH = Path(__file__).parents[1]
+
 
 # TODO(sean): use the spotipy secrets manager instead of this
-secrets = json.load(open("secrets.json"))["secrets"]
+secrets = json.load(open(ROOT_PATH / "secrets.json"))["secrets"]
 TOKEN = spotipy.util.prompt_for_user_token(
     username=secrets["username"],
     scope=secrets["scope"],

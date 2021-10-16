@@ -6,12 +6,12 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 import requests
-from utils import TOKEN
+from spotify_data.utils import TOKEN
 
 # use functools cache properties as the Track attributes are costly
 import functools
 
-SPOTIFY_DATA_ROOT = Path(__file__).parents[1] / "data"
+SPOTIFY_DATA_ROOT = Path(__file__).parents[2] / "data"
 DATA_CACHE = SPOTIFY_DATA_ROOT / "cache"
 QUERY_BASE_URL = "https://api.spotify.com/v1/"
 # how many objects to create in parallel
@@ -24,10 +24,10 @@ class SpotifyParser:
 
     file_prefix: str = "StreamingHistory"
     num_files: int = 4
+    use_cache: bool = True
 
     @functools.cached_property
     def raw_listening_history(self) -> List[Dict]:
-
         streaming_files = []
         for file_num in range(0, self.num_files):
             with open(
@@ -37,7 +37,6 @@ class SpotifyParser:
                 file_chunk = json.loads(data_file.read())
                 streaming_files.extend(file_chunk)
                 print(f"reading {len(file_chunk)} records from file {file_num}")
-
         return streaming_files
 
     @staticmethod
@@ -52,14 +51,13 @@ class SpotifyParser:
     def listening_history(self) -> pd.DataFrame:
         # if file is cached, don't recalculate values
         # TODO(sean): create a nicer caching system than manually reading and writing (cache module?)
-        if not self._is_cached():
+        if not self._is_cached() or not self.use_cache:
             pool = multiprocessing.Pool(processes=CONCURRENCY)
-            records = pool.map(self._create_track, self.raw_listening_history)
+            records = pool.map(self._create_track, self.raw_listening_history[:20])
 
             data = pd.DataFrame.from_records([record.__dict__ for record in records]).assign(
                 endTime=lambda row: pd.to_datetime(row["endTime"]),
             )
-
             # cache and return dataframe
             data.to_csv(DATA_CACHE / (self.file_prefix + ".csv"), index=False)
             return data

@@ -1,5 +1,5 @@
-from wrangling.streaming_history import SpotifyParser
-from utils import GENRE_MAP, Genre, SpotifyVariables
+from spotify_data.wrangling.streaming_history import SpotifyParser
+from spotify_data.utils import GENRE_MAP, Genre, SpotifyVariables
 
 import pandas as pd
 
@@ -57,4 +57,4 @@ def calculate_rolling_average(dataset: SpotifyParser.listening_history, window: 
             .rolling(window=window, min_periods=1)
             .mean()
         )
-    return pd.concat(frames)
+    return pd.concat(frames).ffill()
