@@ -1,0 +1,38 @@
+[tool.black]
+line-length = 100
+include = '\.pyi?$' 
+exclude = '/(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|\.svn|_build|buck-out|build|dist)/'
+
+[tool.pylint.messages_control]
+disable = [
+  "line-too-long",
+
+  "missing-module-docstring",
+  "missing-function-docstring",
+  "missing-class-docstring",
+
+  "wrong-import-order",
+  "invalid-name",
+
+  "too-few-public-methods",
+  "no-else-return",
+  "no-else-continue",
+
+  "bare-except",
+
+  "import-error",
+
+  "logging-fstring-interpolation",
+
+  "no-member",
+  "arguments-differ",
+
+  "duplicate-code",
+  "fixme",
+
+  # we like defining attributes outside of init, e.g. in `@property`s
+  "attribute-defined-outside-init",
+]
+
+[tool.pylint.design]
+max-attributes=16

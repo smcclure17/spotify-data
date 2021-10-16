@@ -1,14 +1,10 @@
-from numpy import column_stack, greater
-import pandas as pd
-
-pd.set_option("max_rows", 200)
 from wrangling.streaming_history import SpotifyParser
 from utils import GENRE_MAP, Genre, SpotifyVariables
 
+import pandas as pd
 
-def calculate_genre_percentages(
-    dataset: SpotifyParser.listening_history, cutoff: int = 20
-):
+
+def calculate_genre_percentages(dataset: SpotifyParser.listening_history, cutoff: int = 20):
     """find the percentage of total songs listened to for each genre by day
 
     dataset: pd.Dataframe output of the SpotifyParser class
@@ -49,9 +45,7 @@ def calculate_genre_percentages(
     return dataset
 
 
-def calculate_rolling_average(
-    dataset: SpotifyParser.listening_history, window: int = 30
-):
+def calculate_rolling_average(dataset: SpotifyParser.listening_history, window: int = 30):
     dataset = calculate_genre_percentages(dataset)
     frames = []
     # TODO(sean): rolling with groupby returned NANs, so slice and parse each genre separately

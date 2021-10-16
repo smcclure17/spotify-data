@@ -56,9 +56,7 @@ class SpotifyParser:
             pool = multiprocessing.Pool(processes=CONCURRENCY)
             records = pool.map(self._create_track, self.raw_listening_history)
 
-            data = pd.DataFrame.from_records(
-                [record.__dict__ for record in records]
-            ).assign(
+            data = pd.DataFrame.from_records([record.__dict__ for record in records]).assign(
                 endTime=lambda row: pd.to_datetime(row["endTime"]),
             )
 
@@ -93,7 +91,7 @@ class Track:
     def _get_artist_id(self) -> str:
         res = requests.get(
             url=QUERY_BASE_URL + "search",
-            headers={"Authorization": f"Bearer " + TOKEN},
+            headers={"Authorization": "Bearer " + TOKEN},
             params={("q", self.artistName), ("type", "artist")},
         )
         # assume the top result is the one we want -- put the faith of God in spotify's search alg
@@ -106,7 +104,7 @@ class Track:
         try:
             res = requests.get(
                 url=QUERY_BASE_URL + "search",
-                headers={"Authorization": f"Bearer " + TOKEN},
+                headers={"Authorization": "Bearer " + TOKEN},
                 params={("q", self.trackName), ("type", "track")},
             )
             results = res.json()["tracks"]["items"]
@@ -123,8 +121,8 @@ class Track:
     def _get_genres(self) -> list:
         try:
             return requests.get(
-                url=QUERY_BASE_URL + f"artists/{self.artist_id}",
-                headers={"Authorization": f"Bearer " + TOKEN},
+                url=QUERY_BASE_URL + ("artists/" + self.artist_id),
+                headers={"Authorization": "Bearer " + TOKEN},
             ).json()["genres"]
         except:
             return None

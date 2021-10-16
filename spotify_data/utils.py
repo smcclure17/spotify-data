@@ -39,7 +39,7 @@ class Genre(str, Enum):
     # must define an ordering operation (__eq__ is handled by Enum automatically)
     def __gt__(self, other):
         if self.__class__ is other.__class__:
-            return self.value > other.value
+            return self.value > other.value  #  pylint: disable=comparison-with-callable
         return NotImplemented
 
 
