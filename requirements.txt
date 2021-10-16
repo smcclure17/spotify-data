@@ -4,3 +4,4 @@ plotly
 black==20.8b1
 pytest
 pylint
+pretty_html_table

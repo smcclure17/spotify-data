@@ -4,7 +4,7 @@ from typing import List, Dict
 from spotify_data.wrangling.streaming_history import SpotifyParser
 from pathlib import Path
 
-SPOTIFY_DATA_ROOT = Path(__file__).parents[2] / "data" / "outputs"
+DATA_OUTPUTS = Path(__file__).parents[2] / "data" / "outputs"
 
 
 def run_summary():
@@ -16,7 +16,7 @@ def run_summary():
     songs["track_name"] = songs["track_name"].apply(
         lambda x: str(x.encode("ascii", "ignore").decode())
     )
-    with open(SPOTIFY_DATA_ROOT / "top_songs.html", "w") as fh:
+    with open(DATA_OUTPUTS / "top_songs.html", "w") as fh:
         fh.write(build_table(songs.head(100), "blue_light"))
 
     # artists
@@ -25,7 +25,7 @@ def run_summary():
     artists["artist_name"] = artists["artist_name"].apply(
         lambda x: str(x.encode("ascii", "ignore").decode())
     )
-    with open(SPOTIFY_DATA_ROOT / "top_artists.html", "w") as fh:
+    with open(DATA_OUTPUTS / "top_artists.html", "w") as fh:
         fh.write(build_table(artists.head(100), "blue_light"))
 
 
