@@ -54,7 +54,7 @@ class SpotifyParser:
         # TODO(sean): create a nicer caching system than manually reading and writing (cache module?)
         if not self._is_cached():
             pool = multiprocessing.Pool(processes=CONCURRENCY)
-            records = pool.map(self._create_track, self.raw_listening_history[:10])
+            records = pool.map(self._create_track, self.raw_listening_history)
 
             data = pd.DataFrame.from_records(
                 [record.__dict__ for record in records]
