@@ -37,15 +37,22 @@ def get_rid_of_2020(data: List[Dict]) -> List[Dict]:
     return [song for song in data if int(song["endTime"].split("-")[0]) > 2020]
 
 
-def get_most_listened_songs(data) -> Dict:
+def get_most_listened_songs(data: List[Dict]) -> Dict:
     total_songs = [item["trackName"] for item in data]
     unique_songs = list(set(total_songs))
     occurences = {song: total_songs.count(song) for song in unique_songs}
     return {k: v for k, v in sorted(occurences.items(), key=lambda item: item[1], reverse=True)}
 
 
-def get_most_listened_artist(data) -> Dict:
+def get_most_listened_artist(data: List[Dict]) -> Dict:
     total_artists = [item["artistName"] for item in data]
     unique_artists = list(set(total_artists))
     occurences = {song: total_artists.count(song) for song in unique_artists}
     return {k: v for k, v in sorted(occurences.items(), key=lambda item: item[1], reverse=True)}
+
+
+def print_top(data, n):
+    for index, (k, v) in enumerate(data.items()):
+        if index == n:
+            return
+        print(f"{k}: {v}")
