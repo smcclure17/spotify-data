@@ -2,5 +2,5 @@
 data/cache/*
 *__pycache__*
 .cache-*
-*.DS_Store
-node_modules
+.DS_store
+node_modules/
