@@ -10,23 +10,10 @@ DATA_OUTPUTS = Path(__file__).parents[2] / "data" / "outputs"
 def run_summary():
     all_my_data = get_rid_of_skips(SpotifyParser().raw_listening_history)
 
-    # songs
-    list_songs = get_most_listened_songs(all_my_data)
-    songs = pd.DataFrame({"track_name": list_songs.keys(), "listens": list_songs.values()})
-    songs["track_name"] = songs["track_name"].apply(
-        lambda x: str(x.encode("ascii", "ignore").decode())
-    )
-    with open(DATA_OUTPUTS / "top_songs.html", "w") as fh:
-        fh.write(build_table(songs.head(100), "blue_light"))
-
-    # artists
-    list_artists = get_most_listened_artist(all_my_data)
-    artists = pd.DataFrame({"artist_name": list_artists.keys(), "listens": list_artists.values()})
-    artists["artist_name"] = artists["artist_name"].apply(
-        lambda x: str(x.encode("ascii", "ignore").decode())
-    )
-    with open(DATA_OUTPUTS / "top_artists.html", "w") as fh:
-        fh.write(build_table(artists.head(100), "blue_light"))
+    list_songs = get_most_listened(all_my_data, key_to_parse="trackName")
+    export_to_table(list_songs, variable="track")
+    list_artists = get_most_listened(all_my_data, "artistName")
+    export_to_table(list_artists, "artist")
 
 
 def get_rid_of_skips(data: List[Dict]) -> List[Dict]:
@@ -37,21 +24,25 @@ def get_rid_of_2020(data: List[Dict]) -> List[Dict]:
     return [song for song in data if int(song["endTime"].split("-")[0]) > 2020]
 
 
-def get_most_listened_songs(data: List[Dict]) -> Dict:
-    total_songs = [item["trackName"] for item in data]
-    unique_songs = list(set(total_songs))
-    occurences = {song: total_songs.count(song) for song in unique_songs}
+def get_most_listened(data: List[Dict], key_to_parse: str) -> Dict:
+    total = [item[key_to_parse] for item in data]
+    unique = set(total)
+    occurences = {song: total.count(song) for song in unique}
     return {k: v for k, v in sorted(occurences.items(), key=lambda item: item[1], reverse=True)}
 
 
-def get_most_listened_artist(data: List[Dict]) -> Dict:
-    total_artists = [item["artistName"] for item in data]
-    unique_artists = list(set(total_artists))
-    occurences = {song: total_artists.count(song) for song in unique_artists}
-    return {k: v for k, v in sorted(occurences.items(), key=lambda item: item[1], reverse=True)}
+def export_to_table(data: Dict[str, int], variable: str) -> None:
+    if variable not in ("track", "artist"):
+        raise ValueError(
+            f"{variable} is not a valid variable option. Please specify either 'track' or 'artist'"
+        )
+
+    output = pd.DataFrame({f"{variable}_name": data.keys(), "listens": data.values()})
+    with open(DATA_OUTPUTS / f"top_{variable}s.html", "w") as fh:
+        fh.write(build_table(output.head(100), "blue_light"))
 
 
-def print_top(data, n):
+def print_top(data: Dict[str, int], n: int):
     for index, (k, v) in enumerate(data.items()):
         if index == n:
             return
