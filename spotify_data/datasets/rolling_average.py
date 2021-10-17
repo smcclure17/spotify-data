@@ -2,6 +2,9 @@ from spotify_data.wrangling.streaming_history import SpotifyParser
 from spotify_data.utils import GENRE_MAP, Genre, SpotifyVariables
 
 import pandas as pd
+from pathlib import Path
+
+DATA_OUTPUT = Path(__file__).parents[2] / "data" / "outputs"
 
 
 def calculate_genre_percentages(dataset: SpotifyParser.listening_history, cutoff: int = 20):
@@ -58,3 +61,13 @@ def calculate_rolling_average(dataset: SpotifyParser.listening_history, window: 
             .mean()
         )
     return pd.concat(frames).ffill()
+
+
+# TODO(sean): either get some sort of API set up to serve files or create an exporter class
+def serve_dataset(file_format="str"):
+    data = calculate_genre_percentages(SpotifyParser().listening_history).reset_index()
+    if file_format == "csv":
+        data.to_csv(DATA_OUTPUT / "rolling_average.csv", index=False)
+    elif file_format == "json":
+        raise NotImplementedError()
+        # TODO(sean) implement this...
